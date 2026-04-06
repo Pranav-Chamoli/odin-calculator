@@ -1,6 +1,13 @@
 let firstNumber = "";
 let secondNumber = "";
 let operator = null;
+function logState() {
+  console.log("State:", {
+    firstNumber,
+    operator,
+    secondNumber,
+  });
+}
 const add = function (firstNumber, secondNumber) {
   return firstNumber + secondNumber;
 };
@@ -42,9 +49,23 @@ const buttonSelector = document.querySelector("#buttons");
 const display = document.querySelector("#display");
 buttonSelector.addEventListener("click", (e) => {
   const target = e.target;
+  console.log("Clicked:", target.textContent);
   if (target.classList.contains("number")) {
     const value = target.dataset.value;
-    firstNumber += value;
-    display.textContent = firstNumber;
+    if (operator === null) {
+      firstNumber += value;
+      console.log("Number pressed:");
+      logState();
+      display.textContent = firstNumber;
+    } else {
+      secondNumber += value;
+      console.log("Number pressed:");
+      logState();
+      display.textContent = secondNumber;
+    }
+  } else if (target.classList.contains("operator")) {
+    if (firstNumber === "") return;
+    operator = target.dataset.value;
+    console.log("Operator set:", operator);
   }
 });
