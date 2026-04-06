@@ -8,6 +8,10 @@ function logState() {
     secondNumber,
   });
 }
+function logAction(action) {
+  console.log(action);
+  logState();
+}
 const add = function (firstNumber, secondNumber) {
   return firstNumber + secondNumber;
 };
@@ -64,8 +68,61 @@ buttonSelector.addEventListener("click", (e) => {
       display.textContent = secondNumber;
     }
   } else if (target.classList.contains("operator")) {
-    if (firstNumber === "") return;
-    operator = target.dataset.value;
-    console.log("Operator set:", operator);
+    if (firstNumber === "") {
+      return;
+    } else if (operator === null) {
+      operator = target.dataset.value;
+      console.log("Operator set:", operator);
+    } else if (secondNumber === "") {
+      operator = target.dataset.value;
+      console.log("Operator set:", operator);
+    } else {
+      const result = operate(operator, firstNumber, secondNumber);
+      display.textContent = result;
+      firstNumber = result.toString();
+      operator = target.dataset.value;
+      secondNumber = "";
+      logState();
+    }
+  } else if (target.classList.contains("equals")) {
+    if (firstNumber === "" || secondNumber === "" || operator === null) {
+      return;
+    } else {
+      const result = operate(operator, firstNumber, secondNumber);
+      display.textContent = result;
+      firstNumber = result.toString();
+      operator = null;
+      secondNumber = "";
+      logState();
+    }
+  } else if (target.classList.contains("clear")) {
+    firstNumber = "";
+    operator = null;
+    secondNumber = "";
+    display.textContent = "0";
+    logAction("Calculator cleared");
+  } else if (target.classList.contains("delete")) {
+    if (operator === null) {
+      firstNumber = firstNumber.slice(0, -1);
+      logAction("Character deleted");
+      if (firstNumber === "") {
+        display.textContent = "0";
+      } else {
+        display.textContent = firstNumber;
+      }
+    } else if (secondNumber != "") {
+      secondNumber = secondNumber.slice(0, -1);
+      logAction("Character deleted");
+      if (secondNumber === "") {
+        operator = null;
+        display.textContent = firstNumber;
+      } else {
+        display.textContent = secondNumber;
+      }
+    } else {
+      operator = null;
+      display.textContent = firstNumber;
+      logState();
+    }
   }
 });
