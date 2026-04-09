@@ -1,6 +1,7 @@
 let firstNumber = "";
 let secondNumber = "";
 let operator = null;
+let isResultDisplayed = false;
 function logState() {
   console.log("State:", {
     firstNumber,
@@ -42,7 +43,11 @@ const operate = function (operator, firstNumber, secondNumber) {
       return multiply(num1, num2);
 
     case "/":
-      return divide(num1, num2);
+      if (num2 === 0) {
+        return "Error";
+      } else {
+        return divide(num1, num2);
+      }
 
     default:
       return null;
@@ -53,10 +58,42 @@ const buttonSelector = document.querySelector("#buttons");
 const display = document.querySelector("#display");
 buttonSelector.addEventListener("click", (e) => {
   const target = e.target;
+  if (!target.matches("buttons")) return;
   console.log("Clicked:", target.textContent);
   if (target.classList.contains("number")) {
     const value = target.dataset.value;
-    if (operator === null) {
+    if (isResultDisplayed) {
+      firstNumber = value === "." ? "0." : value;
+      operator = null;
+      secondNumber = "";
+      isResultDisplayed = false;
+      display.textContent = firstNumber;
+      return;
+    }
+    if (value === ".") {
+      if (operator === null && firstNumber.includes(".")) return;
+      if (operator !== null && secondNumber.includes(".")) return;
+      if (operator === null && firstNumber === "") {
+        firstNumber = "0.";
+        display.textContent = firstNumber;
+        return;
+      }
+      if (operator !== null && secondNumber === "") {
+        secondNumber = "0.";
+        display.textContent = secondNumber;
+        return;
+      }
+      if (operator === null) {
+        firstNumber += ".";
+        display.textContent = firstNumber;
+        logState();
+      } else {
+        secondNumber += ".";
+        display.textContent = secondNumber;
+        logState();
+      }
+      return;
+    } else if (operator === null) {
       firstNumber += value;
       console.log("Number pressed:");
       logState();
@@ -88,11 +125,22 @@ buttonSelector.addEventListener("click", (e) => {
     if (firstNumber === "" || secondNumber === "" || operator === null) {
       return;
     } else {
-      const result = operate(operator, firstNumber, secondNumber);
+      let result = operate(operator, firstNumber, secondNumber);
+
+      if (result === "Error") {
+        display.textContent = "Error";
+        firstNumber = "";
+        operator = null;
+        secondNumber = "";
+        isResultDisplayed = true;
+        return;
+      }
+      result = Number(result.toFixed(5));
       display.textContent = result;
       firstNumber = result.toString();
       operator = null;
       secondNumber = "";
+      isResultDisplayed = true;
       logState();
     }
   } else if (target.classList.contains("clear")) {
@@ -110,7 +158,7 @@ buttonSelector.addEventListener("click", (e) => {
       } else {
         display.textContent = firstNumber;
       }
-    } else if (secondNumber != "") {
+    } else if (secondNumber !== "") {
       secondNumber = secondNumber.slice(0, -1);
       logAction("Character deleted");
       if (secondNumber === "") {
