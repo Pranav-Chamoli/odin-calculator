@@ -58,7 +58,7 @@ const buttonSelector = document.querySelector("#buttons");
 const display = document.querySelector("#display");
 buttonSelector.addEventListener("click", (e) => {
   const target = e.target;
-  if (!target.matches("buttons")) return;
+  if (!target.matches("button")) return;
   console.log("Clicked:", target.textContent);
   if (target.classList.contains("number")) {
     const value = target.dataset.value;
